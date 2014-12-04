@@ -335,7 +335,9 @@ abstract class Smarty_Resource
             $_return = call_user_func_array($_default_handler,
                                             array($source->type, $source->name, &$_content, &$_timestamp, $source->smarty));
             if (is_string($_return)) {
+                Smarty::muteExpectedErrors();
                 $source->timestamp = @filemtime($_return);
+                Smarty::unmuteExpectedErrors();
                 $source->exists = !!$source->timestamp;
 
                 return $_return;
@@ -362,8 +364,9 @@ abstract class Smarty_Resource
      */
     protected function fileExists(Smarty_Template_Source $source, $file)
     {
+        Smarty::muteExpectedErrors();
         $source->timestamp = is_file($file) ? @filemtime($file) : false;
-
+        Smarty::unmuteExpectedErrors();
         return $source->exists = !!$source->timestamp;
     }
 
@@ -773,7 +776,9 @@ class Smarty_Template_Source
 
         $compiled = new Smarty_Template_Compiled($this);
         $this->handler->populateCompiledFilepath($compiled, $_template);
+        Smarty::muteExpectedErrors();
         $compiled->timestamp = @filemtime($compiled->filepath);
+        Smarty::unmuteExpectedErrors();
         $compiled->exists = !!$compiled->timestamp;
 
         // runtime cache
